@@ -1,0 +1,28 @@
+{
+  "period": { "from": "2026-08-01", "to": "2026-08-31" },
+  "period_label": "tháng 8/2026",
+  "period_short": "T8/2026",
+  "previous_label": "T7/2026",
+  "compare_label_short": "so với tháng trước",
+  "sources": ["API đơn hàng (mẫu)"],
+  "revenue": 12845000000,
+  "revenue_prev": 11720000000,
+  "orders": 184230,
+  "orders_prev": 176900,
+  "return_rate": 0.042,
+  "return_rate_prev": 0.047,
+  "weekly": {
+    "labels": ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4", "Tuần 5"],
+    "current": [2810000000, 3050000000, 2990000000, 3320000000, 675000000],
+    "previous": [2650000000, 2780000000, 2900000000, 2870000000, 520000000]
+  },
+  "regions": [
+    { "name": "Miền Bắc", "orders": 71200, "revenue": 4960000000, "growth": 0.071, "return_rate": 0.039 },
+    { "name": "Miền Trung", "orders": 28400, "revenue": 1985000000, "growth": 0.052, "return_rate": 0.051 },
+    { "name": "Miền Nam", "orders": 84630, "revenue": 5900000000, "growth": 0.118, "return_rate": 0.041 }
+  ],
+  "insights": [
+    "Miền Nam đóng góp phần lớn tăng trưởng (+11,8%).",
+    "Tuần 4 đạt đỉnh doanh thu nhờ chương trình khuyến mãi giữa tháng."
+  ]
+}

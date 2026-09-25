@@ -1,0 +1,46 @@
+schema: spec-driven
+
+context: |
+  Domain: repo sinh báo cáo số liệu kinh doanh (doanh thu, đơn hàng, KPI vận hành...) dưới dạng file HTML tự chứa (self-contained), có thể lấy dữ liệu từ API nội bộ/bên thứ ba, CSV/Excel.
+  Người dùng chính: nhân sự vận hành/kinh doanh yêu cầu Claude Code sinh báo cáo; ngôn ngữ báo cáo mặc định tiếng Việt, định dạng số vi-VN, tiền tệ VND.
+  Tech stack: Python 3.12 + uv (package manager), pandas, Jinja2, httpx, pydantic; biểu đồ bằng Chart.js; test bằng pytest, lint/format bằng ruff.
+  Quy ước: tài liệu cài đặt/hướng dẫn nằm trong instruction/; skill của Claude trong .claude/skills/; secrets (API key) chỉ để trong .env, không commit.
+
+rules:
+  proposal:
+    - Viết bằng tiếng Việt, thuật ngữ kỹ thuật giữ nguyên tiếng Anh
+    - Luôn có mục Non-goals
+  tasks:
+    - Mỗi task đủ nhỏ để hoàn thành trong tối đa 2 giờ
+    - Task nào thêm công cụ/cách cài đặt mới thì phải kèm task cập nhật instruction/
+
+# Project context (optional)
+# This is shown to AI when creating artifacts.
+# Add your tech stack, conventions, style guides, domain knowledge, etc.
+# Example:
+#   context: |
+#     Tech stack: TypeScript, React, Node.js
+#     We use conventional commits
+#     Domain: e-commerce platform
+
+# Per-artifact rules (optional)
+# Add custom rules for specific artifacts.
+# Example:
+#   rules:
+#     proposal:
+#       - Keep proposals under 500 words
+#       - Always include a "Non-goals" section
+#     tasks:
+#       - Break tasks into chunks of max 2 hours
+
+# Per-operation guidance (optional)
+# Add advisory guidance for how apply and archive work should be conducted.
+# This is separate from artifact rules above.
+# Example:
+#   operations:
+#     apply:
+#       guidance:
+#         - Keep test summaries concise
+#     archive:
+#       guidance:
+#         - Summarize the archive outcome before finishing

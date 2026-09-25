@@ -1,0 +1,216 @@
+{
+  "meta": {
+    "eyebrow": "Báo cáo kinh doanh",
+    "title": "Báo cáo doanh thu tháng 8/2026",
+    "subtitle": "Tổng quan doanh thu, đơn hàng và hiệu suất theo khu vực. Số liệu mẫu minh hoạ.",
+    "period": {
+      "from": "2026-08-01",
+      "to": "2026-08-31"
+    },
+    "compare_label": "so với T7/2026",
+    "owner": "Phòng Kinh doanh",
+    "generated_at": "2026-09-25T09:00:00+07:00",
+    "sources": [
+      "API đơn hàng (mẫu)",
+      "file kpi.xlsx (mẫu)"
+    ]
+  },
+  "sections": [
+    {
+      "type": "kpis",
+      "title": "Chỉ số chính",
+      "items": [
+        {
+          "label": "Doanh thu",
+          "value": 12845000000,
+          "previous": 11720000000,
+          "format": "currency",
+          "compact": true
+        },
+        {
+          "label": "Số đơn hàng",
+          "value": 184230,
+          "previous": 176900,
+          "format": "number"
+        },
+        {
+          "label": "Giá trị đơn trung bình",
+          "value": 69724,
+          "previous": 66252,
+          "format": "currency"
+        },
+        {
+          "label": "Tỷ lệ hoàn hàng",
+          "value": 0.042,
+          "previous": 0.047,
+          "format": "percent",
+          "invert": true
+        }
+      ]
+    },
+    {
+      "type": "chart",
+      "title": "Doanh thu theo tuần",
+      "description": "Đơn vị: VND. So sánh tháng này với tháng trước.",
+      "chart": "line",
+      "format": "currency",
+      "compact": true,
+      "labels": [
+        "Tuần 1",
+        "Tuần 2",
+        "Tuần 3",
+        "Tuần 4",
+        "Tuần 5"
+      ],
+      "series": [
+        {
+          "name": "T8/2026",
+          "data": [
+            2810000000,
+            3050000000,
+            2990000000,
+            3320000000,
+            675000000
+          ]
+        },
+        {
+          "name": "T7/2026",
+          "data": [
+            2650000000,
+            2780000000,
+            2900000000,
+            2870000000,
+            520000000
+          ],
+          "dashed": true
+        }
+      ]
+    },
+    {
+      "type": "chart",
+      "title": "Đơn hàng theo khu vực",
+      "chart": "bar",
+      "format": "number",
+      "labels": [
+        "Miền Bắc",
+        "Miền Trung",
+        "Miền Nam"
+      ],
+      "series": [
+        {
+          "name": "T8/2026",
+          "data": [
+            71200,
+            28400,
+            84630
+          ]
+        },
+        {
+          "name": "T7/2026",
+          "data": [
+            68900,
+            27100,
+            80900
+          ]
+        }
+      ]
+    },
+    {
+      "type": "chart",
+      "title": "Cơ cấu doanh thu theo kênh",
+      "chart": "doughnut",
+      "format": "currency",
+      "compact": true,
+      "labels": [
+        "Sàn TMĐT",
+        "Website",
+        "Cửa hàng",
+        "Đối tác"
+      ],
+      "series": [
+        {
+          "name": "Doanh thu",
+          "data": [
+            5780000000,
+            3210000000,
+            2570000000,
+            1285000000
+          ]
+        }
+      ]
+    },
+    {
+      "type": "table",
+      "title": "Chi tiết theo khu vực",
+      "columns": [
+        {
+          "key": "region",
+          "label": "Khu vực"
+        },
+        {
+          "key": "orders",
+          "label": "Đơn hàng",
+          "format": "number"
+        },
+        {
+          "key": "revenue",
+          "label": "Doanh thu",
+          "format": "currency"
+        },
+        {
+          "key": "growth",
+          "label": "Tăng trưởng",
+          "format": "delta"
+        },
+        {
+          "key": "return_rate",
+          "label": "Hoàn hàng",
+          "format": "percent"
+        }
+      ],
+      "rows": [
+        {
+          "region": "Miền Bắc",
+          "orders": 71200,
+          "revenue": 4960000000,
+          "growth": 0.071,
+          "return_rate": 0.039
+        },
+        {
+          "region": "Miền Trung",
+          "orders": 28400,
+          "revenue": 1985000000,
+          "growth": 0.052,
+          "return_rate": 0.051
+        },
+        {
+          "region": "Miền Nam",
+          "orders": 84630,
+          "revenue": 5900000000,
+          "growth": 0.118,
+          "return_rate": 0.041
+        }
+      ],
+      "totals": {
+        "region": "Tổng",
+        "orders": 184230,
+        "revenue": 12845000000,
+        "growth": 0.096,
+        "return_rate": 0.042
+      }
+    },
+    {
+      "type": "text",
+      "title": "Nhận định",
+      "tone": "good",
+      "paragraphs": [
+        "Doanh thu tăng 9,6% so với tháng trước, chủ yếu nhờ Miền Nam (+11,8%).",
+        "Tỷ lệ hoàn hàng giảm 0,5 điểm phần trăm; Miền Trung vẫn cao hơn mức trung bình."
+      ],
+      "bullets": [
+        "Theo dõi tỷ lệ hoàn hàng Miền Trung trong tháng 9.",
+        "Mở rộng chương trình khuyến mãi kênh Website."
+      ]
+    }
+  ]
+}

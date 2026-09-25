@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Báo cáo doanh thu</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --surface-2: #f1f3f6;
+    --border: #e3e6eb;
+    --text: #1a1f29;
+    --text-2: #5b6473;
+    --accent: #1d4ed8;
+    --up: #047857;
+    --down: #b91c1c;
+    --neutral: #6b7280;
+    --c1: #2563eb; --c2: #0d9488; --c3: #d97706; --c4: #7c3aed; --c5: #e11d48; --c6: #64748b;
+    --grid: rgba(26, 31, 41, .08);
+    --radius: 12px;
+    --shadow: 0 1px 2px rgba(16, 24, 40, .06);
+    color-scheme: light;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1218; --surface: #171b23; --surface-2: #1e232d; --border: #2a303b;
+      --text: #e7eaf0; --text-2: #9aa3b2; --accent: #7aa2ff;
+      --up: #34d399; --down: #f87171; --neutral: #9ca3af;
+      --c1: #60a5fa; --c2: #2dd4bf; --c3: #fbbf24; --c4: #a78bfa; --c5: #fb7185; --c6: #94a3b8;
+      --grid: rgba(231, 234, 240, .08); --shadow: none;
+      color-scheme: dark;
+    }
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1218; --surface: #171b23; --surface-2: #1e232d; --border: #2a303b;
+    --text: #e7eaf0; --text-2: #9aa3b2; --accent: #7aa2ff;
+    --up: #34d399; --down: #f87171; --neutral: #9ca3af;
+    --c1: #60a5fa; --c2: #2dd4bf; --c3: #fbbf24; --c4: #a78bfa; --c5: #fb7185; --c6: #94a3b8;
+    --grid: rgba(231, 234, 240, .08); --shadow: none;
+    color-scheme: dark;
+  }
+
+  * { box-sizing: border-box; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font: 15px/1.55 system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    font-variant-numeric: tabular-nums;
+  }
+  .page { max-width: 1120px; margin: 0 auto; padding: 32px 16px 48px; }
+
+  header.report-head { display: flex; gap: 16px; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; margin-bottom: 24px; }
+  .eyebrow { font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--accent); font-weight: 600; margin: 0 0 6px; }
+  h1 { font-size: 28px; line-height: 1.2; margin: 0 0 6px; letter-spacing: -.01em; }
+  .subtitle { color: var(--text-2); margin: 0; max-width: 64ch; }
+  .meta { display: grid; gap: 2px; font-size: 13px; color: var(--text-2); text-align: right; }
+  .meta strong { color: var(--text); font-weight: 600; }
+  .theme-toggle {
+    margin-top: 8px; justify-self: end; font: inherit; font-size: 12px; color: var(--text-2);
+    background: var(--surface); border: 1px solid var(--border); border-radius: 999px; padding: 4px 10px; cursor: pointer;
+  }
+
+  section.block { margin-top: 28px; }
+  section.block > h2 { font-size: 17px; margin: 0 0 4px; }
+  section.block > .desc { color: var(--text-2); font-size: 14px; margin: 0 0 12px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: var(--shadow); padding: 16px; }
+  .note { font-size: 13px; color: var(--text-2); margin: 10px 0 0; }
+
+  .kpis { display: grid; gap: 12px; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); }
+  .kpi { break-inside: avoid; }
+  .kpi .label { font-size: 13px; color: var(--text-2); margin: 0 0 6px; }
+  .kpi .value { font-size: 26px; font-weight: 650; line-height: 1.15; margin: 0; letter-spacing: -.01em; overflow-wrap: anywhere; }
+  .kpi .delta { display: inline-flex; gap: 4px; align-items: center; margin-top: 8px; font-size: 13px; font-weight: 600; }
+  .kpi .delta.good { color: var(--up); }
+  .kpi .delta.bad { color: var(--down); }
+  .kpi .delta.flat { color: var(--neutral); }
+  .kpi .delta .vs { color: var(--text-2); font-weight: 400; }
+
+  .chart-card { break-inside: avoid; }
+  .chart-wrap { position: relative; height: 320px; }
+  .chart-wrap.round { height: 280px; max-width: 420px; margin: 0 auto; }
+
+  .table-scroll { overflow-x: auto; margin: -4px -16px -16px; padding: 0 16px 8px; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { padding: 9px 10px; border-bottom: 1px solid var(--border); text-align: left; white-space: nowrap; }
+  th { font-size: 12px; color: var(--text-2); font-weight: 600; text-transform: uppercase; letter-spacing: .04em; cursor: pointer; user-select: none; position: sticky; top: 0; background: var(--surface); }
+  th[aria-sort="ascending"]::after { content: " ▲"; }
+  th[aria-sort="descending"]::after { content: " ▼"; }
+  td.num, th.num { text-align: right; }
+  tbody tr:hover { background: var(--surface-2); }
+  tfoot td { font-weight: 650; border-bottom: 0; border-top: 2px solid var(--border); }
+
+  .text p { margin: 0 0 10px; max-width: 75ch; }
+  .text p:last-child { margin-bottom: 0; }
+  .callout { border-left: 3px solid var(--accent); }
+  .callout.warn { border-left-color: var(--c3); }
+  .callout.bad { border-left-color: var(--down); }
+  .callout.good { border-left-color: var(--up); }
+  .text ul { margin: 0; padding-left: 20px; }
+  .text li { margin: 4px 0; }
+
+  .empty { color: var(--text-2); font-style: italic; padding: 24px 0; text-align: center; }
+
+  /* nội dung từ template Markdown */
+  .md > :first-child { margin-top: 0; }
+  .md h2 { font-size: 17px; margin: 28px 0 8px; }
+  .md h3 { font-size: 15px; margin: 20px 0 6px; }
+  .md h4 { font-size: 14px; margin: 16px 0 6px; color: var(--text-2); }
+  .md p, .md ul, .md ol { margin: 0 0 10px; max-width: 75ch; }
+  .md ul, .md ol { padding-left: 22px; }
+  .md li { margin: 4px 0; }
+  .md a { color: var(--accent); }
+  .md hr { border: 0; border-top: 1px solid var(--border); margin: 24px 0; }
+  .md code { font: 13px ui-monospace, SFMono-Regular, Menlo, monospace; background: var(--surface-2); padding: 1px 5px; border-radius: 4px; }
+  .md .card { margin: 0 0 12px; }
+  .md blockquote { margin: 0 0 12px; padding: 12px 16px; background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--accent); border-radius: var(--radius); }
+  .md blockquote > :last-child { margin-bottom: 0; }
+  .md blockquote.good { border-left-color: var(--up); }
+  .md blockquote.warn { border-left-color: var(--c3); }
+  .md blockquote.bad { border-left-color: var(--down); }
+
+  footer.report-foot { margin-top: 40px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 12px; color: var(--text-2); display: flex; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+
+  @media (max-width: 640px) {
+    h1 { font-size: 22px; }
+    .meta { text-align: left; }
+    .theme-toggle { justify-self: start; }
+    .kpi .value { font-size: 22px; }
+    .chart-wrap { height: 260px; }
+  }
+  @media print {
+    @page { size: A4; margin: 14mm; }
+    body { background: #fff; font-size: 12px; }
+    .page { max-width: none; padding: 0; }
+    .theme-toggle { display: none; }
+    .card { box-shadow: none; }
+    section.block { break-inside: avoid-page; }
+    .chart-wrap { height: 240px; }
+    .table-scroll { overflow: visible; }
+    th { position: static; }
+  }
+</style>
+</head>
+<body>
+<div class="page">
+  <header class="report-head">
+    <div>
+      <p class="eyebrow" id="eyebrow"></p>
+      <h1 id="title"></h1>
+      <p class="subtitle" id="subtitle"></p>
+    </div>
+    <div class="meta" id="meta"></div>
+  </header>
+  <main id="sections"></main>
+  <footer class="report-foot">
+    <span id="foot-sources"></span>
+    <span id="foot-generated"></span>
+  </footer>
+</div>
+
+<!--
+  DỮ LIỆU BÁO CÁO — chỉ cần sửa khối JSON này. Schema: references/data-schema.md
+-->
+<script type="application/json" id="report-data">
+{
+  "meta": {
+    "eyebrow": "Báo cáo kinh doanh",
+    "title": "Báo cáo doanh thu tháng 8/2026",
+    "subtitle": "Tổng quan doanh thu, đơn hàng và hiệu suất theo khu vực. Số liệu mẫu minh hoạ.",
+    "period": { "from": "2026-08-01", "to": "2026-08-31" },
+    "compare_label": "so với T7/2026",
+    "owner": "Phòng Kinh doanh",
+    "generated_at": "2026-09-25T09:00:00+07:00",
+    "sources": ["API đơn hàng (mẫu)", "file kpi.xlsx (mẫu)"]
+  },
+  "sections": [
+    {
+      "type": "kpis",
+      "title": "Chỉ số chính",
+      "items": [
+        { "label": "Doanh thu", "value": 12845000000, "previous": 11720000000, "format": "currency", "compact": true },
+        { "label": "Số đơn hàng", "value": 184230, "previous": 176900, "format": "number" },
+        { "label": "Giá trị đơn trung bình", "value": 69724, "previous": 66252, "format": "currency" },
+        { "label": "Tỷ lệ hoàn hàng", "value": 0.042, "previous": 0.047, "format": "percent", "invert": true }
+      ]
+    },
+    {
+      "type": "chart",
+      "title": "Doanh thu theo tuần",
+      "description": "Đơn vị: VND. So sánh tháng này với tháng trước.",
+      "chart": "line",
+      "format": "currency",
+      "compact": true,
+      "labels": ["Tuần 1", "Tuần 2", "Tuần 3", "Tuần 4", "Tuần 5"],
+      "series": [
+        { "name": "T8/2026", "data": [2810000000, 3050000000, 2990000000, 3320000000, 675000000] },
+        { "name": "T7/2026", "data": [2650000000, 2780000000, 2900000000, 2870000000, 520000000], "dashed": true }
+      ]
+    },
+    {
+      "type": "chart",
+      "title": "Đơn hàng theo khu vực",
+      "chart": "bar",
+      "format": "number",
+      "labels": ["Miền Bắc", "Miền Trung", "Miền Nam"],
+      "series": [
+        { "name": "T8/2026", "data": [71200, 28400, 84630] },
+        { "name": "T7/2026", "data": [68900, 27100, 80900] }
+      ]
+    },
+    {
+      "type": "chart",
+      "title": "Cơ cấu doanh thu theo kênh",
+      "chart": "doughnut",
+      "format": "currency",
+      "compact": true,
+      "labels": ["Sàn TMĐT", "Website", "Cửa hàng", "Đối tác"],
+      "series": [{ "name": "Doanh thu", "data": [5780000000, 3210000000, 2570000000, 1285000000] }]
+    },
+    {
+      "type": "table",
+      "title": "Chi tiết theo khu vực",
+      "columns": [
+        { "key": "region", "label": "Khu vực" },
+        { "key": "orders", "label": "Đơn hàng", "format": "number" },
+        { "key": "revenue", "label": "Doanh thu", "format": "currency" },
+        { "key": "growth", "label": "Tăng trưởng", "format": "delta" },
+        { "key": "return_rate", "label": "Hoàn hàng", "format": "percent" }
+      ],
+      "rows": [
+        { "region": "Miền Bắc", "orders": 71200, "revenue": 4960000000, "growth": 0.071, "return_rate": 0.039 },
+        { "region": "Miền Trung", "orders": 28400, "revenue": 1985000000, "growth": 0.052, "return_rate": 0.051 },
+        { "region": "Miền Nam", "orders": 84630, "revenue": 5900000000, "growth": 0.118, "return_rate": 0.041 }
+      ],
+      "totals": { "region": "Tổng", "orders": 184230, "revenue": 12845000000, "growth": 0.096, "return_rate": 0.042 }
+    },
+    {
+      "type": "text",
+      "title": "Nhận định",
+      "tone": "good",
+      "paragraphs": [
+        "Doanh thu tăng 9,6% so với tháng trước, chủ yếu nhờ Miền Nam (+11,8%).",
+        "Tỷ lệ hoàn hàng giảm 0,5 điểm phần trăm; Miền Trung vẫn cao hơn mức trung bình."
+      ],
+      "bullets": ["Theo dõi tỷ lệ hoàn hàng Miền Trung trong tháng 9.", "Mở rộng chương trình khuyến mãi kênh Website."]
+    }
+  ]
+}
+</script>
+
+<script src="vendor/chart.umd.min.js"></script>
+<script>
+(function () {
+  "use strict";
+  var DATA = JSON.parse(document.getElementById("report-data").textContent);
+  var LOCALE = "vi-VN";
+  var TZ = "Asia/Ho_Chi_Minh";
+
+  // ---------- định dạng ----------
+  function nf(opts) { return new Intl.NumberFormat(LOCALE, opts); }
+  function compactVi(v) {
+    var a = Math.abs(v), units = [[1e9, " tỷ"], [1e6, " triệu"], [1e3, " nghìn"]];
+    for (var i = 0; i < units.length; i++) {
+      if (a >= units[i][0]) return nf({ maximumFractionDigits: 2 }).format(v / units[i][0]) + units[i][1];
+    }
+    return nf({ maximumFractionDigits: 0 }).format(v);
+  }
+  function fmt(v, format, compact) {
+    if (v === null || v === undefined || v === "") return "—";
+    if (typeof v !== "number") return String(v);
+    switch (format) {
+      case "currency": return (compact ? compactVi(v) : nf({ maximumFractionDigits: 0 }).format(v)) + " ₫";
+      case "percent": return nf({ style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(v);
+      case "delta": return (v > 0 ? "+" : "") + nf({ style: "percent", minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(v);
+      case "decimal": return nf({ maximumFractionDigits: 2 }).format(v);
+      default: return compact ? compactVi(v) : nf({ maximumFractionDigits: 0 }).format(v);
+    }
+  }
+  function fmtDate(iso) {
+    var p = iso.split("-");
+    return p[2] + "/" + p[1] + "/" + p[0];
+  }
+  function fmtDateTime(iso) {
+    return new Intl.DateTimeFormat(LOCALE, { timeZone: TZ, dateStyle: "short", timeStyle: "short" }).format(new Date(iso));
+  }
+  function el(tag, cls, text) {
+    var e = document.createElement(tag);
+    if (cls) e.className = cls;
+    if (text !== undefined) e.textContent = text;
+    return e;
+  }
+  function isEmpty(arr) { return !arr || arr.length === 0; }
+
+  // ---------- header / footer ----------
+  var m = DATA.meta || {};
+  document.title = m.title || document.title;
+  document.getElementById("eyebrow").textContent = m.eyebrow || "";
+  document.getElementById("title").textContent = m.title || "";
+  document.getElementById("subtitle").textContent = m.subtitle || "";
+  var meta = document.getElementById("meta");
+  if (m.period) {
+    var p = el("div"); p.append("Kỳ báo cáo: ");
+    p.appendChild(el("strong", "", fmtDate(m.period.from) + " – " + fmtDate(m.period.to)));
+    meta.appendChild(p);
+  }
+  if (m.owner) meta.appendChild(el("div", "", "Đơn vị: " + m.owner));
+  var toggle = el("button", "theme-toggle", "Đổi giao diện sáng/tối");
+  toggle.type = "button";
+  toggle.addEventListener("click", function () {
+    var root = document.documentElement;
+    var dark = root.dataset.theme ? root.dataset.theme === "dark" : matchMedia("(prefers-color-scheme: dark)").matches;
+    root.dataset.theme = dark ? "light" : "dark";
+    redrawCharts();
+  });
+  meta.appendChild(toggle);
+  document.getElementById("foot-sources").textContent = m.sources && m.sources.length ? "Nguồn dữ liệu: " + m.sources.join(" · ") : "";
+  document.getElementById("foot-generated").textContent = m.generated_at ? "Sinh lúc " + fmtDateTime(m.generated_at) + " (giờ Việt Nam)" : "";
+
+  // ---------- sections ----------
+  var host = document.getElementById("sections");
+  var charts = [];
+
+  (DATA.sections || []).forEach(function (s) {
+    var sec = el("section", "block");
+    if (s.title) sec.appendChild(el("h2", "", s.title));
+    if (s.description) sec.appendChild(el("p", "desc", s.description));
+    var render = { kpis: renderKpis, chart: renderChart, table: renderTable, text: renderText, markdown: renderMarkdown }[s.type];
+    if (render) render(s, sec);
+    if (s.note) sec.appendChild(el("p", "note", s.note));
+    host.appendChild(sec);
+  });
+
+  function renderEmpty(sec) {
+    var c = el("div", "card"); c.appendChild(el("div", "empty", "Không có dữ liệu trong kỳ"));
+    sec.appendChild(c);
+  }
+
+  function renderKpis(s, sec) {
+    if (isEmpty(s.items)) return renderEmpty(sec);
+    var grid = el("div", "kpis");
+    s.items.forEach(function (k) {
+      var c = el("div", "card kpi");
+      c.appendChild(el("p", "label", k.label));
+      c.appendChild(el("p", "value", fmt(k.value, k.format, k.compact)));
+      if (typeof k.previous === "number" && typeof k.value === "number") {
+        var d = el("div", "delta");
+        var diff, text;
+        if (k.format === "percent") {
+          diff = k.value - k.previous;
+          text = (diff > 0 ? "+" : "") + nf({ maximumFractionDigits: 1, minimumFractionDigits: 1 }).format(diff * 100) + " điểm %";
+        } else if (k.previous !== 0) {
+          diff = (k.value - k.previous) / Math.abs(k.previous);
+          text = fmt(diff, "delta");
+        }
+        if (text !== undefined) {
+          var better = k.invert ? diff < 0 : diff > 0;
+          d.classList.add(diff === 0 ? "flat" : better ? "good" : "bad");
+          d.appendChild(el("span", "", (diff > 0 ? "▲ " : diff < 0 ? "▼ " : "■ ") + text));
+          d.appendChild(el("span", "vs", k.compare_label || m.compare_label || "so với kỳ trước"));
+          c.appendChild(d);
+        }
+      }
+      if (k.note) c.appendChild(el("p", "note", k.note));
+      grid.appendChild(c);
+    });
+    sec.appendChild(grid);
+  }
+
+  function cssVar(name) { return getComputedStyle(document.documentElement).getPropertyValue(name).trim(); }
+  function palette() { return ["--c1", "--c2", "--c3", "--c4", "--c5", "--c6"].map(cssVar); }
+
+  function renderChart(s, sec) {
+    var hasData = !isEmpty(s.labels) && (s.series || []).some(function (x) { return !isEmpty(x.data); });
+    if (!hasData) return renderEmpty(sec);
+    var round = s.chart === "pie" || s.chart === "doughnut";
+    var card = el("div", "card chart-card");
+    var wrap = el("div", "chart-wrap" + (round ? " round" : ""));
+    var canvas = el("canvas");
+    canvas.setAttribute("role", "img");
+    canvas.setAttribute("aria-label", s.title || "Biểu đồ");
+    wrap.appendChild(canvas); card.appendChild(wrap); sec.appendChild(card);
+    if (typeof Chart === "undefined") { wrap.replaceChildren(el("div", "empty", "Không tải được thư viện biểu đồ")); return; }
+    charts.push({ spec: s, canvas: canvas, chart: null });
+  }
+
+  function buildChart(entry) {
+    var s = entry.spec, round = s.chart === "pie" || s.chart === "doughnut";
+    var colors = palette(), text2 = cssVar("--text-2"), grid = cssVar("--grid"), surface = cssVar("--surface");
+    var datasets = s.series.map(function (sr, i) {
+      var color = colors[i % colors.length];
+      if (round) return { label: sr.name, data: sr.data, backgroundColor: sr.data.map(function (_, j) { return colors[j % colors.length]; }), borderColor: surface, borderWidth: 2 };
+      return {
+        label: sr.name, data: sr.data, borderColor: color, backgroundColor: s.chart === "bar" ? color : color + "22",
+        borderDash: sr.dashed ? [6, 4] : [], borderWidth: 2, pointRadius: 3, cubicInterpolationMode: "monotone", fill: s.chart === "area",
+        borderRadius: s.chart === "bar" ? 4 : 0, maxBarThickness: 48
+      };
+    });
+    var tick = function (v) { return fmt(v, s.format, true); };
+    var opts = {
+      responsive: true, maintainAspectRatio: false, animation: false,
+      interaction: { mode: round ? "nearest" : "index", intersect: round },
+      plugins: {
+        legend: { display: round || s.series.length > 1, position: "bottom", labels: { color: text2, usePointStyle: true, boxWidth: 8 } },
+        tooltip: { callbacks: { label: function (ctx) { var v = round ? ctx.parsed : (s.horizontal ? ctx.parsed.x : ctx.parsed.y); return " " + (round ? ctx.label : ctx.dataset.label) + ": " + fmt(v, s.format, s.compact); } } }
+      }
+    };
+    if (!round) {
+      var valueAxis = { beginAtZero: true, stacked: !!s.stacked, ticks: { color: text2, callback: tick }, grid: { color: grid } };
+      var catAxis = { stacked: !!s.stacked, ticks: { color: text2 }, grid: { display: false } };
+      opts.indexAxis = s.horizontal ? "y" : "x";
+      opts.scales = s.horizontal ? { x: valueAxis, y: catAxis } : { x: catAxis, y: valueAxis };
+    } else if (s.chart === "doughnut") {
+      opts.cutout = "62%";
+    }
+    var type = s.chart === "area" ? "line" : s.chart;
+    entry.chart = new Chart(entry.canvas, { type: type, data: { labels: s.labels, datasets: datasets }, options: opts });
+  }
+
+  function redrawCharts() {
+    if (typeof Chart !== "undefined") {
+      Chart.defaults.font.family = getComputedStyle(document.body).fontFamily;
+      Chart.defaults.color = cssVar("--text-2");
+    }
+    charts.forEach(function (c) { if (c.chart) c.chart.destroy(); buildChart(c); });
+  }
+
+  function renderTable(s, sec) {
+    if (isEmpty(s.rows)) return renderEmpty(sec);
+    var card = el("div", "card"), scroll = el("div", "table-scroll"), table = el("table");
+    var numeric = function (c) { return c.format && c.format !== "text"; };
+    var thead = el("thead"), hr = el("tr");
+    s.columns.forEach(function (c, i) {
+      var th = el("th", numeric(c) ? "num" : "", c.label);
+      th.scope = "col";
+      th.addEventListener("click", function () { sortBy(i); });
+      hr.appendChild(th);
+    });
+    thead.appendChild(hr); table.appendChild(thead);
+    var tbody = el("tbody"); table.appendChild(tbody);
+    function row(r) {
+      var tr = el("tr");
+      s.columns.forEach(function (c) { tr.appendChild(el("td", numeric(c) ? "num" : "", fmt(r[c.key], c.format, c.compact))); });
+      return tr;
+    }
+    var rows = s.rows.slice(), sortCol = -1, asc = true;
+    function paint() { tbody.replaceChildren.apply(tbody, rows.map(row)); }
+    function sortBy(i) {
+      asc = sortCol === i ? !asc : !numeric(s.columns[i]);
+      sortCol = i;
+      var key = s.columns[i].key;
+      rows.sort(function (a, b) {
+        var x = a[key], y = b[key];
+        var r = typeof x === "number" && typeof y === "number" ? x - y : String(x).localeCompare(String(y), LOCALE);
+        return asc ? r : -r;
+      });
+      hr.querySelectorAll("th").forEach(function (th, j) { th.setAttribute("aria-sort", j === i ? (asc ? "ascending" : "descending") : "none"); });
+      paint();
+    }
+    paint();
+    if (s.totals) { var tf = el("tfoot"); tf.appendChild(row(s.totals)); table.appendChild(tf); }
+    scroll.appendChild(table); card.appendChild(scroll); sec.appendChild(card);
+  }
+
+  // HTML do build_report.py sinh từ Markdown (markdown-it, html=False) — không nhận HTML thô từ dữ liệu
+  function renderMarkdown(s, sec) {
+    var d = el("div", "md");
+    d.innerHTML = s.html || "";
+    sec.appendChild(d);
+  }
+
+  function renderText(s, sec) {
+    var card = el("div", "card text" + (s.tone ? " callout " + s.tone : ""));
+    (s.paragraphs || []).forEach(function (t) { card.appendChild(el("p", "", t)); });
+    if (!isEmpty(s.bullets)) {
+      var ul = el("ul");
+      s.bullets.forEach(function (t) { ul.appendChild(el("li", "", t)); });
+      card.appendChild(ul);
+    }
+    sec.appendChild(card);
+  }
+
+  redrawCharts();
+  matchMedia("(prefers-color-scheme: dark)").addEventListener("change", function () { if (!document.documentElement.dataset.theme) redrawCharts(); });
+  window.addEventListener("beforeprint", function () { charts.forEach(function (c) { c.chart && c.chart.resize(); }); });
+  window.addEventListener("afterprint", function () { charts.forEach(function (c) { c.chart && c.chart.resize(); }); });
+})();
+</script>
+</body>
+</html>

@@ -1,0 +1,26 @@
+# secrets
+.env
+.env.*
+!.env.example
+
+# báo cáo sinh ra và dữ liệu cache
+output/
+data/cache/
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# OS / editor
+.DS_Store
+.idea/
+.vscode/
+
+# Obsidian (second-brain): giữ cấu hình chung, bỏ trạng thái cá nhân
+second-brain/.obsidian/workspace*.json
+second-brain/.obsidian/cache
+second-brain/.obsidian/plugins/*/data.json
+second-brain/.trash/
